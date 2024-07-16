@@ -1,5 +1,7 @@
-const mongoose = require("mongoose");
-require('dotenv').config();
+import mongoose from "mongoose";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const userSchema = new mongoose.Schema({
     user_id: String,
@@ -33,9 +35,6 @@ class User {
 
     static async getUserById(id) {
         try {
-            // const user = await UserModel.findById(id);
-            // const user = await UserModel.findOne({"useer_id":id});
-            // const user = await UserModel.
             const user =  await UserModel.findOne({user_id : id});
             console.log(user);
             return user;
@@ -47,9 +46,6 @@ class User {
 
     static async certifiyUser(id, pw) {
         try {
-            // const user = await UserModel.findById(id);
-            // const user = await UserModel.findOne({"useer_id":id});
-            // const user = await UserModel.
             const user =  await UserModel.findOne({user_id : id, pw : pw});
             return user;
         } catch (error) {
@@ -61,7 +57,7 @@ class User {
     static async deleteUserById(id) {
         try {
             const result =  await UserModel.deleteMany({user_id : id});
-            return [result];
+            return result;
         } catch (error) {
             console.log(error);
             throw error;
@@ -69,4 +65,4 @@ class User {
     }
 }
 
-module.exports =  User;
+export default  User;

@@ -2,10 +2,12 @@
 // import { UserToken } from "../interfaces/UserToken";
 // import dotenv from 'dotenv';
 // import { TokenExpiredError } from "jsonwebtoken";
-const TokenModel = require("../model/TokenModel");
+// const TokenModel = require("../model/TokenModel");
+import TokenModel from "../model/TokenModel.js";
 // dotenv.config();
 
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const verifyToken = (req, res, next) => {
   // 인증 완료
@@ -33,4 +35,4 @@ const verifyToken = (req, res, next) => {
   }
 }
 
-module.exports = verifyToken;
+export default verifyToken;

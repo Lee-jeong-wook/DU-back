@@ -1,9 +1,16 @@
 {
+  "type": "module",
   "dependencies": {
+    "@firebase/app": "^0.10.6",
+    "@firebase/storage": "^0.12.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
+    "firebase": "^10.12.3",
+    "firebase-admin": "^12.2.0",
+    "firestore": "^1.1.6",
+    "firestore-storage": "^7.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.1",

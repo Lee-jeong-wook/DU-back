@@ -1,8 +1,9 @@
 // import { TokenExpiredError } from "jsonwebtoken";
 // import { UserToken } from "../interfaces/UserToken";
 // import dotenv from "dotenv";
-const dotenv = require("dotenv");
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
 dotenv.config();
 
 class TokenModel {
@@ -46,4 +47,4 @@ class TokenModel {
     }
 }
 
-module.exports = TokenModel;
+export default TokenModel;
