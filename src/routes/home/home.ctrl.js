@@ -46,11 +46,10 @@ const process = {
         if (!req.file) {
             return res.status(400).send('No file uploaded.');
         }
-        Market.uploadImg(file);
-        console.log(req.file.originalname);
-        console.log(req.file);
+        console.log("work");
+        const result = Market.uploadImg(req.file);
         // await image.save();
-        res.send("success");
+        res.send(result);
     },
     singUp: async (req, res) => {
         try {
