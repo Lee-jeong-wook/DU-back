@@ -2,9 +2,20 @@
 // const { getFirestore, collection, addDoc } = require("firebase/firestore");
 import storage from "../config.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-// const { storage }= require("firebase-admin");
-// const firebase = require('firebase/storage');
-// const storageRef = firebase.ref();
+import mongoose from "mongoose";
+
+const postSchema = new mongoose.Schema({
+    title: String,
+    author: String,
+    like: Number,
+    category: String,
+    content: String,
+    image: String,
+    cost: Number,
+    location: String
+});
+
+const PostModel = mongoose.model('Post', postSchema);
 
 class Market {  
     constructor(body) {    
@@ -19,20 +30,44 @@ class Market {
             )
             const result = await uploadBytes(locationRef, file.buffer, {contentType: file.mimetype});
             const imgurl = await getDownloadURL(result.ref);
-            console.log(imgurl);
+            console.log(typeof(imgurl));
             return imgurl;
           } catch (error) {
             console.error("Error uploading file: ", error);
           }
     }
-    makePost = async(data) => {
-
+    static makePost = async(data, image) => {
+        const {title, author, like, content, location, category, cost} = data;
+        const post = new PostModel({
+            title: title,
+            author: author,
+            like: like,
+            category: category,
+            cost:cost,
+            content: content,
+            image: image,
+            location: location
+        })
+        try {
+            const result = await post.save();
+            return result;
+        } catch (error) {
+            console.log(error);
+            throw Error;
+        }
     }
-    getList = async() => {
-
+    static getList = async() => {
+        const list =await PostModel.find({});
+        console.log(list);
+        return list;
     }
-    getPost = async() => {
-
+    static getListByCategory = async(category) => {
+        const list = PostModel.find({category: category});
+        return category;
+    }
+    static getPost = async(id) => {
+        const post = PostModel.findById({id:id});
+        return post;
     }
     
 

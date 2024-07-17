@@ -1,23 +1,12 @@
 "use strict";
-
-import mongoose from 'mongoose';
 import User from '../../model/User.js';
 import TokenModel from '../../model/TokenModel.js';
 import Market from '../../model/Market.js';
 
-const postSchema = new mongoose.Schema({
-    image: String,
-    title: String,
-    content: String,
-    author: String,
-    price: Number,
-});
-
-const Post = mongoose.model('Post', postSchema);
-
 const output = {
-    home: (req, res) => {
-        // res.render('home/index')
+    list: async (req, res) => {
+        const list = await Market.getList();
+        return res.status(200).json({"msg":"success", "list":list});
     },
     market: (req, res) => {
         console.log(req);
@@ -34,11 +23,6 @@ const output = {
 
 // post방식으로 보낼 코드
 const process = {
-    list: (req, res) => {
-        const data = req.body;
-        console.log(req.user);
-        return res.json({ data: data });
-    },
     analyze: (req, res) => {
         const data = req.body;
     },
@@ -46,10 +30,9 @@ const process = {
         if (!req.file) {
             return res.status(400).send('No file uploaded.');
         }
-        console.log("work");
-        const result = Market.uploadImg(req.file);
-        // await image.save();
-        res.send(result);
+        const url = await Market.uploadImg(req.file);
+        const result = await Market.makePost(req.body, url);
+        res.status(200).json({"msg": "success"});
     },
     singUp: async (req, res) => {
         try {
@@ -58,7 +41,7 @@ const process = {
                 return res.status(400).send("already exist id");
             }
             await User.uploadUser(req.body);
-            res.send("User signed up successfully");
+            res.status(200).json({"msg": "success"});
         } catch (error) {
             res.status(500).send(error.message + "500");
         }

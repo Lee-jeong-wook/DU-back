@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     pw: String,
     name: String,
     location: String,
+    like: [mongoose.Schema.Types.ObjectId],
 });
 
 const UserModel = mongoose.model('User', userSchema);
