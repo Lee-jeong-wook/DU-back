@@ -20,7 +20,13 @@ router.post('/user/delete', ctrl.process.deleteUser);
 
 router.get('/market/', ctrl.output.market);
 router.post('/market/upload', upload.single('image'), ctrl.process.makePost);
+router.post('/market/like',  ctrl.process.likePost);
+router.post('/market/delete',  ctrl.process.deletePost);
+router.get('/market/:id', ctrl.output.getOne);
 // router.post('/market/:id', ctrl.process.list);
+
+router.post('/analyze',  upload.single('image'),ctrl.process.handleProductSearch);
+router.post('/analyze/list', ctrl.process.listProducts);
 
 router.get("/chat/:userid");
 router.get("/chat");

@@ -1,15 +1,10 @@
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
+import { ObjectId } from "mongodb";
 
 dotenv.config();
 
-const userSchema = new mongoose.Schema({
-    user_id: String,
-    pw: String,
-    name: String,
-    location: String,
-    like: [mongoose.Schema.Types.ObjectId],
-});
+import userSchema from "../MongooseModel/UserModel.js";
 
 const UserModel = mongoose.model('User', userSchema);
 
@@ -47,7 +42,10 @@ class User {
 
     static async certifiyUser(id, pw) {
         try {
-            const user =  await UserModel.findOne({user_id : id, pw : pw});
+            console.log(id);
+            const find_id = ObjectId.createFromHexString(id);
+            const user =  await UserModel.findById(find_id);
+            console.log(user);
             return user;
         } catch (error) {
             console.log(error);
@@ -63,6 +61,47 @@ class User {
             console.log(error);
             throw error;
         }
+    }
+    static async likePost (user_id, post){
+        try {
+            const result = await UserModel.findOneAndUpdate({user_id:user_id,$push:{like_list:post}});
+            console.log(result);
+            return;
+        } catch (error) {
+            console.error(error);
+            throw Error;
+        }
+    }
+    static async unlikePost (user_id, post){
+        try {
+            const result = await UserModel.findOneAndUpdate({user_id:user_id,$pop:{like_list:post}});
+            console.log(result);
+            return result;
+        } catch (error) {
+            console.error(error);
+            throw Error;
+        }
+    }
+    static async findLikePost(user_id, post) {
+        console.log("post is : " + post);
+        try {
+            const user = await UserModel.findOne({
+                user_id: user_id,
+                // like_list: { $elemMatch: post }
+            });
+            console.log(user);
+            return !!user; // Returns true if user is found, otherwise false
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+    static async addChatRoom(idList){
+        const result = await UserModel.updateMany(
+            { _id: { $in: idList } }, // 조건: idList에 포함된 사용자 ID
+            { $push: { chat_room: chatRoomId } } // 업데이트: chat_room 배열에 chatRoomId 추가
+        );
+        return result;
     }
 }
 

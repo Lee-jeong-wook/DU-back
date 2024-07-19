@@ -34,10 +34,14 @@ app.use('/', home);
 
 io.on('connection', (socket) => {
     console.log('연결');
-    socket.on('chatting', (data) => {
-        const clientData = data;
-        io.emit('chatting', clientData);
-    });
+    socket.on('joinRoom', ({ roomId }) => {
+        socket.join(roomId);
+        console.log(`User joined room: ${roomId}`);
+      });
+    
+      socket.on('message', ({ roomId, message }) => {
+        io.to(roomId).emit('message', message);
+      });
 });
 
 const { MONGO_URI } = process.env;

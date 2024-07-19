@@ -4,16 +4,8 @@ import storage from "../config.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import mongoose from "mongoose";
 
-const postSchema = new mongoose.Schema({
-    title: String,
-    author: String,
-    like: Number,
-    category: String,
-    content: String,
-    image: String,
-    cost: Number,
-    location: String
-});
+import postSchema from "../MongooseModel/PostModel.js";
+import { ObjectId } from "mongodb";
 
 const PostModel = mongoose.model('Post', postSchema);
 
@@ -37,16 +29,19 @@ class Market {
           }
     }
     static makePost = async(data, image) => {
-        const {title, author, like, content, location, category, cost} = data;
+        const {title,  like, content, location, category, cost, id} = data;
+        console.log("hi");
+        console.log(id);
         const post = new PostModel({
             title: title,
-            author: author,
+            author: "user",
             like: like,
             category: category,
             cost:cost,
             content: content,
             image: image,
-            location: location
+            location: location,
+            user: ObjectId.createFromHexString(id)
         })
         try {
             const result = await post.save();
@@ -66,8 +61,25 @@ class Market {
         return category;
     }
     static getPost = async(id) => {
-        const post = PostModel.findById({id:id});
+        const post_id = ObjectId.createFromHexString(id);
+        console.log(ObjectId.isValid(post_id));
+        const post = await PostModel.findById(post_id);
         return post;
+    }
+    static likePost = async(id) => {
+        console.log(id);
+        const result = await PostModel.findByIdAndUpdate(id,{$inc:{like: 1}});
+        console.log(result);
+        return result;
+    }
+    static unlikePost = async(id) => {
+        console.log(id);
+        const result = await PostModel.findByIdAndUpdate(id,{$inc:{like: -1}});
+        console.log(result);
+        return result;
+    }
+    static deletePost = async(id) => {
+        return await PostModel.deleteMany({id:id});
     }
     
 

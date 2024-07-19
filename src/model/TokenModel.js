@@ -40,7 +40,7 @@ class TokenModel {
             id : data.user_id, 
             location : data.location
         }, process.env.JWT_SECRET, {
-            expiresIn: '3h',
+            expiresIn: '8h',
             issuer: '토큰 발급자'
         });
         return token;

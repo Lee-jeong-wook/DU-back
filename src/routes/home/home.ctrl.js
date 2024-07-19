@@ -1,7 +1,14 @@
 "use strict";
 import User from '../../model/User.js';
 import TokenModel from '../../model/TokenModel.js';
-import Market from '../../model/Market.js';
+// import Market from '../../model/Market.js';
+import Market from "../../model/Market.js"
+// const GoogleVision = require('../../model/Google.js');
+import GoogleVision from "../../model/Google.js";
+// import vision from '@google-cloud/vision';
+import { promises as fs } from 'fs';
+
+const googleVision = new GoogleVision();
 
 const output = {
     list: async (req, res) => {
@@ -18,7 +25,13 @@ const output = {
     },
     userChat: (req, res) => {
 
+    },
+    getOne: async (req, res) => {
+        const id = req.params.id; 
+        const result = await Market.getPost(id);
+        return res.json({result: result});
     }
+    
 };
 
 // post방식으로 보낼 코드
@@ -32,7 +45,8 @@ const process = {
         }
         const url = await Market.uploadImg(req.file);
         const result = await Market.makePost(req.body, url);
-        res.status(200).json({"msg": "success"});
+        console.log(result);
+        res.status(200);
     },
     singUp: async (req, res) => {
         try {
@@ -76,6 +90,56 @@ const process = {
             res.send(error.message);
         }
     },
+    likePost: async (req, res) => {
+        try {
+            const {user_id, post_id} = req.body;
+            const post = await Market.getPost(post_id);
+            if(await User.findLikePost(user_id, post)){
+                console.log("unlike");
+                const result = await User.unlikePost(user_id,post);
+                console.log(result);
+                await Market.unlikePost(post);
+            } else{
+                console.log("like");
+                const result = await User.likePost(user_id,post);
+                await Market.likePost(post);
+            }
+            return res.status(200).json({"msg":"success"});
+        } catch (error) {
+            console.error(error);
+            res.send(error.message);
+        }
+    },
+    deletePost: async(req, res) => {
+        const {post_id} = req.body;
+        const list = await Market.deletePost(post_id);
+        console.log(list);
+    },
+    handleProductSearch : async (req, res) => {
+        try {
+        const file = req.file;
+        console.log("file is = " + file);
+          const results = await googleVision.searchSimilarProducts("us-west1", "apparel", file.buffer, "");
+          await fs.unlink(file.buffer); // Clean up the uploaded file
+          console.log(results);
+          res.json(results);
+        } catch (error) {
+            console.log("error");
+          console.error(error);
+        //   res.redirect("./index.html");
+          return res.json({img:"https://zerowastechef.com/wp-content/uploads/2024/02/02.24.24-denim-jeans-bag-front.jpg"});
+        }
+      },
+      listProducts :async (req, res) =>{
+      
+        try {
+          const products = await googleVision.listProducts("us-west1");
+          res.json(products);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send('Internal Server Error');
+        }
+    }
 };
 
 export default {
